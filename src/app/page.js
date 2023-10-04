@@ -8,11 +8,12 @@ export default function Home() {
   const [chatInput, setChatInput] = useState("hello");
   const [messages, setMessages] = useState([""]);
   const [usermessage, setusermessage] = useState([""]);
-  const [botmessages, setbotmessages] = useState([""]);
+  const [botmessages, setbotmessage] = useState([""]);
   const [typing, setTyping] = useState(false);
   const [input, setInput] = useState("messages");
   const [showTyping, setShowTyping] = useState(true);
   const [divClass, setDivClass] = useState("chat-msg-box bot:last-child");
+  const [count, setCount] = useState(0); 
   let formattedMessage = "Hi,How can i help you".replace(/\n/gm, "<br />");
   let watermark=0;
   
@@ -150,20 +151,34 @@ export default function Home() {
 
   const handlesubmit = (event) => {
     event.preventDefault();
-    setMessages([...messages,event.target.value]);
-    updateDivClass();
+    console.log(chatInput)
+    // setusermessage([...messages,event.target.value]);
+    console.log(event)
+    useraddmessage(chatInput)
+    
+    // updateDivClass();
     // addMessage(event.target.value);
     sendMessage(responseToken, responseConversationId);
   };
 
   const addMessage = (message) => {
     const newMessage = message;
-    setMessages([...messages, newMessage]);
+    setbotmessage([...messages, newMessage]);
     console.log(messages);
   };
 
+  const useraddmessage=(message)=>{
+    const newMessage = message;
+    setusermessage([...messages, newMessage]);
+    console.log(messages);
+    
+  }
+
   const updateDivClass = () => {
     setDivClass("chat-msg-client");
+  };
+  const incrementCount = () => {
+    setCount(count + 1);
   };
 
   return (
@@ -179,8 +194,11 @@ export default function Home() {
           <div>
             {showTyping && <div className="typing">Loading...</div>}
             <main>
-              <div className={divClass}>
-                <p>{messages}</p>
+              <div className="chat-msg-box">
+                <p>{botmessages}</p>
+              </div>
+              <div className="chat-msg-client">
+                <p>{usermessage}</p>
               </div>
             </main>
           </div>
