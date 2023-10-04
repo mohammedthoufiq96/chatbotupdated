@@ -5,14 +5,17 @@ import { useEffect, useState } from "react";
 export default function Home() {
   const [responseToken, setResponseToken] = useState("");
   const [responseConversationId, setResponseConversationId] = useState("");
-  const [chatInput, setChatInput] = useState("what is your name");
-  const [messages, setMessages] = useState(["hello"]);
+  const [chatInput, setChatInput] = useState("hello");
+  const [messages, setMessages] = useState([""]);
+  const [usermessage, setusermessage] = useState([""]);
+  const [botmessages, setbotmessages] = useState([""]);
   const [typing, setTyping] = useState(false);
   const [input, setInput] = useState("messages");
   const [showTyping, setShowTyping] = useState(true);
   const [divClass, setDivClass] = useState("chat-msg-box bot:last-child");
   let formattedMessage = "Hi,How can i help you".replace(/\n/gm, "<br />");
-
+  let watermark=0;
+  
   useEffect(() => {
     fetchToken();
   }, []);
@@ -61,6 +64,7 @@ export default function Home() {
   };
 
   const sendMessage = (token, conversationId) => {
+    console.log("set"+responseConversationId);
     console.log("conv" + conversationId, chatInput);
     setTyping(true);
     formattedMessage = chatInput.replace(/\n/gm, "<br />");
@@ -93,11 +97,15 @@ export default function Home() {
     )
       .then((response) => response.json())
       .then((result) => {
-        setResponseConversationId(result.conversationId);
+        const conv_id=result.id
+        let array_id=conv_id.split("|")
+        console.log(array_id)
+        watermark=parseInt(array_id[1]);
+        // setResponseConversationId(result.conversationId);
         console.log(result);
         setTimeout(function () {
           getmessage(token, conversationId);
-        }, 2500);
+        }, 5000);
       })
       .catch((error) => console.error("error", error));
   };
@@ -117,17 +125,18 @@ export default function Home() {
     fetch(
       "https://europe.directline.botframework.com/v3/directline/conversations/" +
         conversationId +
-        "/activities?watermark=0",
+        "/activities?watermark="+watermark,
       requestOptionsPost
     )
       .then((response) => response.json())
       .then((result) => {
         console.log(result);
+        
         console.log(
-          result.activities[0].attachments[0].content.body[0].items[0].text
+          result.activities[0].text ?? result.activities[0].attachments[0].content.body[0].items[0].text
         );
         addMessage(
-          result.activities[0].attachments[0].content.body[0].items[0].text
+          result.activities[0].text ?? result.activities[0].attachments[0].content.body[0].items[0].text
         );
       })
       .catch((error) => console.error("error", error));
@@ -141,6 +150,7 @@ export default function Home() {
 
   const handlesubmit = (event) => {
     event.preventDefault();
+    setMessages([...messages,event.target.value]);
     updateDivClass();
     // addMessage(event.target.value);
     sendMessage(responseToken, responseConversationId);
