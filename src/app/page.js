@@ -59,7 +59,7 @@ export default function Home() {
       .then((result) => {
         setResponseConversationId(result.conversationId);
         console.log(result.conversationId);
-        sendMessage(token, result.conversationId);
+        // sendMessage(token, result.conversationId);g
       })
       .catch((error) => console.error("error", error));
   };
