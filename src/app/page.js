@@ -13,10 +13,10 @@ export default function Home() {
   const [input, setInput] = useState("messages");
   const [showTyping, setShowTyping] = useState(true);
   const [divClass, setDivClass] = useState("chat-msg-box bot:last-child");
-  const [count, setCount] = useState(0); 
+  const [count, setCount] = useState(0);
   let formattedMessage = "Hi,How can i help you".replace(/\n/gm, "<br />");
-  let watermark=0;
-  
+  let watermark = 0;
+
   useEffect(() => {
     fetchToken();
   }, []);
@@ -65,7 +65,7 @@ export default function Home() {
   };
 
   const sendMessage = (token, conversationId) => {
-    console.log("set"+responseConversationId);
+    console.log("set" + responseConversationId);
     console.log("conv" + conversationId, chatInput);
     setTyping(true);
     formattedMessage = chatInput.replace(/\n/gm, "<br />");
@@ -98,15 +98,15 @@ export default function Home() {
     )
       .then((response) => response.json())
       .then((result) => {
-        const conv_id=result.id
-        let array_id=conv_id.split("|")
-        console.log(array_id)
-        watermark=parseInt(array_id[1]);
+        const conv_id = result.id;
+        let array_id = conv_id.split("|");
+        console.log(array_id);
+        watermark = parseInt(array_id[1]);
         // setResponseConversationId(result.conversationId);
         console.log(result);
         setTimeout(function () {
           getmessage(token, conversationId);
-        }, 5000);
+        }, 2500);
       })
       .catch((error) => console.error("error", error));
   };
@@ -126,18 +126,20 @@ export default function Home() {
     fetch(
       "https://europe.directline.botframework.com/v3/directline/conversations/" +
         conversationId +
-        "/activities?watermark="+watermark,
+        "/activities?watermark=" +
+        watermark,
       requestOptionsPost
     )
       .then((response) => response.json())
       .then((result) => {
         console.log(result);
-        
         console.log(
-          result.activities[0].text ?? result.activities[0].attachments[0].content.body[0].items[0].text
+          result.activities[0].text ??
+            result.activities[0].attachments[0].content.body[0].items[0].text
         );
         addMessage(
-          result.activities[0].text ?? result.activities[0].attachments[0].content.body[0].items[0].text
+          result.activities[0].text ??
+            result.activities[0].attachments[0].content.body[0].items[0].text
         );
       })
       .catch((error) => console.error("error", error));
@@ -151,11 +153,11 @@ export default function Home() {
 
   const handlesubmit = (event) => {
     event.preventDefault();
-    console.log(chatInput)
+    console.log(chatInput);
     // setusermessage([...messages,event.target.value]);
-    console.log(event)
-    useraddmessage(chatInput)
-    
+    console.log(event);
+    useraddmessage(chatInput);
+
     // updateDivClass();
     // addMessage(event.target.value);
     sendMessage(responseToken, responseConversationId);
@@ -167,16 +169,16 @@ export default function Home() {
     console.log(messages);
   };
 
-  const useraddmessage=(message)=>{
+  const useraddmessage = (message) => {
     const newMessage = message;
     setusermessage([...messages, newMessage]);
     console.log(messages);
-    
-  }
+  };
 
   const updateDivClass = () => {
     setDivClass("chat-msg-client");
   };
+
   const incrementCount = () => {
     setCount(count + 1);
   };
@@ -194,12 +196,18 @@ export default function Home() {
           <div>
             {showTyping && <div className="typing">Loading...</div>}
             <main>
-              <div className="chat-msg-box">
-                <p>{botmessages}</p>
-              </div>
-              <div className="chat-msg-client">
-                <p>{usermessage}</p>
-              </div>
+              {usermessage.map((item, index) => {
+                return (
+                  <>
+                    <div className="chat-msg-box">
+                      <p>{botmessages[index]}</p>
+                    </div>
+                    <div className="chat-msg-client">
+                      <p>{item}</p>
+                    </div>
+                  </>
+                );
+              })}
             </main>
           </div>
         </div>
